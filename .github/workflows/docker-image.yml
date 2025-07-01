@@ -32,25 +32,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to Server via SSH
+      # Step 1: Check out the repo so we can read the docker-compose.yml file
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # Step 2: Connect to server, create the necessary files, and deploy
+      - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Exit immediately if a command exits with a non-zero status.
             set -e
             
-            # IMPORTANT: Replace this with the real path from running `pwd` on your server
-            cd ~/webui 
+            # Create the project directory if it doesn't exist
+            mkdir -p ~/webui_cicd
+            cd ~/webui_cicd
+
+            # --- File Creation on Server ---
+
+            # A) Create the docker-compose.yml file.
+            echo "Creating docker-compose.yml on server..."
+            cat <<'EOF' > docker-compose.yml
+            ${{ env.DOCKER_COMPOSE_CONTENT }}
+            EOF
             
-            echo "Pulling the latest image..."
-            # Use 'docker compose' with a space
-            docker-compose pull
+            # B) Create the .env file with secrets.
+            echo "Creating .env file on server..."
+            cat <<EOF > .env
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            EOF
             
-            echo "Restarting the container..."
-            docker-compose up -d
+            # --- Deployment Execution ---
             
-            echo "Cleaning up old images..."
-            docker image prune -f
+            echo "Pulling latest image from Docker Hub..."
+            docker compose pull
+            
+            echo "Starting container with new configuration..."
+            docker compose up -d
+            
+            echo "Cleaning up old unused images..."
+            docker image prune -af
+            
+            echo "Deployment successful!"
+        env:
+          DOCKER_COMPOSE_CONTENT: ${{ toJSON(fromJSON(fileread('docker-compose.yml'))) }}
