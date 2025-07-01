@@ -36,12 +36,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      # NEW DEBUGGING STEP
-      - name: List files in workspace
-        run: ls -R
-
-      # Step 2: Read the docker-compose.yml file into an environment variable
-      - name: Read docker-compose.yml content
+      # Step 2: Read the docker-compose.yaml file into an environment variable
+      - name: Read docker-compose.yaml content
         id: compose_content
         run: |
           echo 'DOCKER_COMPOSE_CONTENT<<EOF' >> $GITHUB_ENV
