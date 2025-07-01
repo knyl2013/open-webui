@@ -81,10 +81,10 @@ jobs:
             # --- Deployment Execution ---
             
             echo "Pulling latest image from Docker Hub..."
-            docker compose pull
+            docker-compose pull
             
             echo "Starting container with new configuration..."
-            docker compose up -d
+            docker-compose up -d
             
             echo "Cleaning up old unused images..."
             docker image prune -af
