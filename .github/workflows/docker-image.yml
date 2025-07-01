@@ -47,10 +47,10 @@ jobs:
             
             echo "Pulling the latest image..."
             # Use 'docker compose' with a space
-            docker compose pull
+            docker-compose pull
             
             echo "Restarting the container..."
-            docker compose up -d
+            docker-compose up -d
             
             echo "Cleaning up old images..."
             docker image prune -f
