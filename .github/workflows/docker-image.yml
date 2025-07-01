@@ -36,6 +36,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
+      # NEW DEBUGGING STEP
+      - name: List files in workspace
+        run: ls -R
+
       # Step 2: Read the docker-compose.yml file into an environment variable
       - name: Read docker-compose.yml content
         id: compose_content
