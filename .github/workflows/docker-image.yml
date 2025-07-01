@@ -28,7 +28,6 @@ jobs:
 
   # Job 2: Deploy the new image to the server
   deploy:
-    # This job will only run if the build-and-push job is successful
     needs: build-and-push
     runs-on: ubuntu-latest
 
@@ -40,14 +39,18 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Navigate to the directory where your docker-compose.yml is
-            cd /path/to/your/docker-compose/folder 
+            # Exit immediately if a command exits with a non-zero status.
+            set -e
             
-            # Pull the new image
-            docker-compose pull
+            # IMPORTANT: Replace this with the real path from running `pwd` on your server
+            cd ~/webui 
             
-            # Restart the container with the new image
-            docker-compose up -d
+            echo "Pulling the latest image..."
+            # Use 'docker compose' with a space
+            docker compose pull
             
-            # Optional: Clean up old, unused images to save space
+            echo "Restarting the container..."
+            docker compose up -d
+            
+            echo "Cleaning up old images..."
             docker image prune -f
