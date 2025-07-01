@@ -36,7 +36,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      # Step 2: Connect to server, create the necessary files, and deploy
+      # Step 2: Read the docker-compose.yml file into an environment variable
+      - name: Read docker-compose.yml content
+        id: compose_content
+        run: |
+          echo 'DOCKER_COMPOSE_CONTENT<<EOF' >> $GITHUB_ENV
+          cat docker-compose.yml >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      # Step 3: Connect to server, create the necessary files, and deploy
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
@@ -78,5 +86,3 @@ jobs:
             docker image prune -af
             
             echo "Deployment successful!"
-        env:
-          DOCKER_COMPOSE_CONTENT: ${{ toJSON(fromJSON(fileread('docker-compose.yml'))) }}
