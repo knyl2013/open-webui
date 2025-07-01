@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repo so we can read the docker-compose.yml file
+      # Step 1: Check out the repo so we can read the docker-compose.yaml file
       - name: Check out repository
         uses: actions/checkout@v3
 
@@ -41,7 +41,7 @@ jobs:
         id: compose_content
         run: |
           echo 'DOCKER_COMPOSE_CONTENT<<EOF' >> $GITHUB_ENV
-          cat docker-compose.yml >> $GITHUB_ENV
+          cat docker-compose.yaml >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
 
       # Step 3: Connect to server, create the necessary files, and deploy
@@ -60,9 +60,9 @@ jobs:
 
             # --- File Creation on Server ---
 
-            # A) Create the docker-compose.yml file.
-            echo "Creating docker-compose.yml on server..."
-            cat <<'EOF' > docker-compose.yml
+            # A) Create the docker-compose.yaml file.
+            echo "Creating docker-compose.yaml on server..."
+            cat <<'EOF' > docker-compose.yaml
             ${{ env.DOCKER_COMPOSE_CONTENT }}
             EOF
             
