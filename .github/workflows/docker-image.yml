@@ -39,10 +39,14 @@ jobs:
       # Step 2: Read the docker-compose.yaml file into an environment variable
       - name: Read docker-compose.yaml content
         id: compose_content
+        shell: bash
         run: |
-          echo 'DOCKER_COMPOSE_CONTENT<<EOF' >> $GITHUB_ENV
-          cat docker-compose.yaml >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+          {
+            echo 'DOCKER_COMPOSE_CONTENT<<EOF'
+            cat docker-compose.yaml
+            echo            # prints a newline even if the file lacks one
+            echo 'EOF'
+          } >> "$GITHUB_ENV"
 
       # Step 3: Connect to server, create the necessary files, and deploy
       - name: Deploy to Server
