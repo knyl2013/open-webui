@@ -52,12 +52,13 @@ jobs:
       # Step 3: Connect to server, create the necessary files, and deploy
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
-        timeout-minutes: 120
+        timeout-minutes: 200
+        command_timeout: 200m
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          command_timout: 30m
+          command_timout: 200m
           script: |
             set -e
             
