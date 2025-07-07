@@ -34,6 +34,16 @@
 		return urlParams.get(key);
 	};
 
+	const getHashParamValue = (key) => {
+		const hash = window.location.hash;
+		if (!hash) {
+			return null;
+		}
+		const hashString = hash.substring(1);
+		const urlParams = new URLSearchParams(hashString);
+		return urlParams.get(key);
+	};
+
 	const setSessionUser = async (sessionUser) => {
 		if (sessionUser) {
 			console.log(sessionUser);
@@ -45,7 +55,7 @@
 			await user.set(sessionUser);
 			await config.set(await getBackendConfig());
 
-			const redirectPath = querystringValue('redirect') || '/';
+			const redirectPath = querystringValue('redirect') || getHashParamValue('redirect') || '/';
 			goto(redirectPath);
 		}
 	};
