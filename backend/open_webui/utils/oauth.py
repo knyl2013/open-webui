@@ -538,10 +538,10 @@ class OAuthManager:
         # Redirect back to the frontend with the JWT token
         redirect_path_from_state = token.get("state")
         if redirect_path_from_state and redirect_path_from_state.startswith("/"):
-            final_redirect_path = redirect_path_from_state
+            final_redirect_path = redirect_path_from_state[1:]
         else:
             # Fallback to the root if state is missing, empty, or invalid.
-            final_redirect_path = "/"
+            final_redirect_path = ""
 
         redirect_base_url = str(request.app.state.config.WEBUI_URL or request.base_url)
         if redirect_base_url.endswith("/"):
