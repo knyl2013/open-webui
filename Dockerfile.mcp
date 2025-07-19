@@ -1,8 +1,6 @@
 FROM python:3.11-slim
 WORKDIR /app
+COPY run-mcp.sh /app/run-mcp.sh
 RUN pip install mcpo uv
-CMD ["uvx", "mcpo", "--host", "0.0.0.0", "--port", "8000", \
-     "--", \
-     "uvx", "mcp-server-time", "--local-timezone=America/New_York", \
-     "--", \
-     "uvx", "mcp-server-fetch"]
+RUN chmod +x /app/run-mcp.sh
+CMD ["bash", "/app/run-mcp.sh"]
