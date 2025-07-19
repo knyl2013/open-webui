@@ -16,9 +16,26 @@ services:
     depends_on:
       - mcp-proxy-server
     restart: always
-  mcp-proxy-server:
-    build: .
-    container_name: mcp-proxy-server
+  mcpo-time-server:
+    container_name: mcpo-time-server
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.11-slim
+        WORKDIR /app
+        RUN pip install mcpo uv
+        # Use CMD to run the server when the container starts
+        CMD ["uvx", "mcpo", "--host", "0.0.0.0", "--port", "8000", "--", "uvx", "mcp-server-time", "--local-timezone=America/New_York"]
+    restart: always
+  mcpo-fetch-server:
+    container_name: mcpo-fetch-server
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.11-slim
+        WORKDIR /app
+        RUN pip install mcpo uv
+        CMD ["uvx", "mcpo", "--host", "0.0.0.0", "--port", "8000", "--", "uvx", "mcp-server-fetch"]
     restart: always
 volumes:
   open-webui:
