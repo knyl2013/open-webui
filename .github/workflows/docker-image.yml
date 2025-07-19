@@ -37,7 +37,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      # Step 2: Read the docker-compose.yaml file into an environment variable
+      # Step 2.1: Read the docker-compose.yaml file into an environment variable
       - name: Read docker-compose.yaml content
         id: compose_content
         shell: bash
@@ -45,6 +45,18 @@ jobs:
           {
             echo 'DOCKER_COMPOSE_CONTENT<<EOF'
             cat docker-compose.yaml
+            echo            # prints a newline even if the file lacks one
+            echo 'EOF'
+          } >> "$GITHUB_ENV"
+      
+      # Step 2.2: Read the Dockerfile.mcp content into an environment variable
+      - name: Read Dockerfile.mcp content
+        id: mcp_content
+        shell: bash
+        run: |
+          {
+            echo 'DOCKERFILE_MCP_CONTENT<<EOF'
+            cat Dockerfile.mcp
             echo            # prints a newline even if the file lacks one
             echo 'EOF'
           } >> "$GITHUB_ENV"
@@ -79,6 +91,12 @@ jobs:
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            EOF
+
+            # C) Create the Dockerfile.mcp file.
+            echo "Creating Dockerfile.mcp on server..."
+            cat <<'EOF' > Dockerfile.mcp
+            ${{ env.DOCKERFILE_MCP_CONTENT }}
             EOF
             
             # --- Deployment Execution ---
