@@ -93,9 +93,9 @@ jobs:
             OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
             EOF
 
-            # C) Create the Dockerfile.mcp file.
-            echo "Creating Dockerfile.mcp on server..."
-            cat <<'EOF' > Dockerfile.mcp
+            # C) Create the Dockerfile file.
+            echo "Creating Dockerfile on server..."
+            cat <<'EOF' > Dockerfile
             ${{ env.DOCKERFILE_MCP_CONTENT }}
             EOF
             
