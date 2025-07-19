@@ -60,6 +60,18 @@ jobs:
             echo            # prints a newline even if the file lacks one
             echo 'EOF'
           } >> "$GITHUB_ENV"
+      
+      # Step 2.3: Read the run-mcp.sh content into an environment variable
+      - name: Read run-mcp.sh content
+        id: run_mcp_content
+        shell: bash
+        run: |
+          {
+            echo 'RUN_MCP_SCRIPT_CONTENT<<EOF'
+            cat run-mcp.sh
+            echo            # prints a newline even if the file lacks one
+            echo 'EOF'
+          } >> "$GITHUB_ENV"
 
       # Step 3: Connect to server, create the necessary files, and deploy
       - name: Deploy to Server
@@ -97,6 +109,12 @@ jobs:
             echo "Creating Dockerfile on server..."
             cat <<'EOF' > Dockerfile
             ${{ env.DOCKERFILE_MCP_CONTENT }}
+            EOF
+
+            # D) Create the run-mcp.sh file.
+            echo "Creating run-mcp.sh on server..."
+            cat <<'EOF' > run-mcp.sh
+            ${{ env.RUN_MCP_SCRIPT_CONTENT }}
             EOF
             
             # --- Deployment Execution ---
