@@ -13,8 +13,6 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       - open-webui:/app/backend/data
-    depends_on:
-      - mcp-proxy-server
     restart: always
   mcpo-time-server:
     container_name: mcpo-time-server
