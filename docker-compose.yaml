@@ -19,8 +19,6 @@ services:
   mcp-proxy-server:
     build: .
     container_name: mcp-proxy-server
-    ports:
-      - "8000:8000"
     restart: always
 volumes:
   open-webui:
