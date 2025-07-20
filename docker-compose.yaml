@@ -35,6 +35,16 @@ services:
         RUN pip install mcpo uv
         CMD ["uvx", "mcpo", "--host", "0.0.0.0", "--port", "8000", "--", "uvx", "mcp-server-fetch"]
     restart: always
+  mcpo-thinking-server:
+    container_name: mcpo-thinking-server
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM nikolaik/python-nodejs:latest
+        WORKDIR /app
+        RUN pip install mcpo uv
+        CMD ["uvx", "mcpo", "--host", "0.0.0.0", "--port", "8000", "--", "npx", "-y", "server-sequential-thinking"]
+    restart: always
 volumes:
   open-webui:
     external: true
