@@ -19,7 +19,7 @@ services:
     build:
       context: .
       dockerfile_inline: |
-        FROM python:3.11-slim
+        FROM nikolaik/python-nodejs:latest
         COPY mcp-config.json mcp-config.json
         RUN pip install mcpo uv
         CMD ["mcpo", "--config", "./mcp-config.json"]
