@@ -14,36 +14,15 @@ services:
     volumes:
       - open-webui:/app/backend/data
     restart: always
-  mcpo-time-server:
-    container_name: mcpo-time-server
+  mcp-servers:
+    container_name: mcp-servers
     build:
       context: .
       dockerfile_inline: |
         FROM python:3.11-slim
-        WORKDIR /app
+        COPY mcp-config.json mcp-config.json
         RUN pip install mcpo uv
-        # Use CMD to run the server when the container starts
-        CMD ["uvx", "mcpo", "--host", "0.0.0.0", "--port", "8000", "--", "uvx", "mcp-server-time", "--local-timezone=America/New_York"]
-    restart: always
-  mcpo-fetch-server:
-    container_name: mcpo-fetch-server
-    build:
-      context: .
-      dockerfile_inline: |
-        FROM python:3.11-slim
-        WORKDIR /app
-        RUN pip install mcpo uv
-        CMD ["uvx", "mcpo", "--host", "0.0.0.0", "--port", "8000", "--", "uvx", "mcp-server-fetch"]
-    restart: always
-  mcpo-thinking-server:
-    container_name: mcpo-thinking-server
-    build:
-      context: .
-      dockerfile_inline: |
-        FROM nikolaik/python-nodejs:latest
-        WORKDIR /app
-        RUN pip install mcpo uv
-        CMD ["uvx", "mcpo", "--host", "0.0.0.0", "--port", "8000", "--", "npx", "-y", "server-sequential-thinking"]
+        CMD ["mcpo", "--config", "./mcp-config.json"]
     restart: always
 volumes:
   open-webui:
