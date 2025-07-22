@@ -41,7 +41,7 @@ class Chat(Base):
 
     meta = Column(JSON, server_default="{}")
     folder_id = Column(Text, ForeignKey('folder.id'), nullable=True)
-    folder = relationship("open_webui.models.folders.Folder", back_populates="chats")
+    folder = relationship("Folder", back_populates="chats")
 
 
 class ChatModel(BaseModel):

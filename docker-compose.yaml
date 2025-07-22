@@ -14,16 +14,16 @@ services:
     volumes:
       - open-webui:/app/backend/data
     restart: always
-  # mcp-servers:
-  #   container_name: mcp-servers
-  #   build:
-  #     context: .
-  #     dockerfile_inline: |
-  #       FROM nikolaik/python-nodejs:latest
-  #       COPY mcp-config.json mcp-config.json
-  #       RUN pip install mcpo uv
-  #       CMD ["mcpo", "--config", "./mcp-config.json"]
-  #   restart: always
+  mcp-servers:
+    container_name: mcp-servers
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM nikolaik/python-nodejs:latest
+        COPY mcp-config.json mcp-config.json
+        RUN pip install mcpo uv
+        CMD ["mcpo", "--config", "./mcp-config.json"]
+    restart: always
 volumes:
   open-webui:
     external: true
