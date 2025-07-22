@@ -10,7 +10,6 @@ from open_webui.env import SRC_LOG_LEVELS
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import BigInteger, Column, Text, JSON, Boolean
 from open_webui.utils.access_control import get_permissions
-from sqlalchemy.orm import relationship
 
 
 log = logging.getLogger(__name__)
