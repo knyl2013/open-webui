@@ -33,11 +33,6 @@ class Folder(Base):
     is_expanded = Column(Boolean, default=False)
     created_at = Column(BigInteger)
     updated_at = Column(BigInteger)
-    chats = relationship(
-        "Chat",
-        back_populates="folder",
-        cascade="all, delete-orphan",
-    )
 
 
 class FolderModel(BaseModel):
@@ -135,14 +130,10 @@ class FolderTable:
 
     def get_folders_by_user_id(self, user_id: str) -> list[FolderModel]:
         with get_db() as db:
-        # The .options(joinedload(Folder.chats)) is the key to performance!
-        folders = (
-            db.query(Folder)
-            .filter_by(user_id=user_id)
-            .options(joinedload(Folder.chats)) # EAGERLY LOAD THE CHATS
-            .all()
-        )
-        return folders
+            return [
+                FolderModel.model_validate(folder)
+                for folder in db.query(Folder).filter_by(user_id=user_id).all()
+            ]
 
     def get_folder_by_parent_id_and_user_id_and_name(
         self, parent_id: Optional[str], user_id: str, name: str
