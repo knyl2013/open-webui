@@ -13,7 +13,6 @@ from sqlalchemy import BigInteger, Boolean, Column, String, Text, JSON, ForeignK
 from sqlalchemy import or_, func, select, and_, text
 from sqlalchemy.sql import exists
 from sqlalchemy.sql.expression import bindparam
-from sqlalchemy.orm import relationship
 
 ####################
 # Chat DB Schema
