@@ -9,7 +9,7 @@ from open_webui.models.tags import TagModel, Tag, Tags
 from open_webui.env import SRC_LOG_LEVELS
 
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import BigInteger, Boolean, Column, String, Text, JSON
+from sqlalchemy import BigInteger, Boolean, Column, String, Text, JSON, ForeignKey
 from sqlalchemy import or_, func, select, and_, text
 from sqlalchemy.sql import exists
 from sqlalchemy.sql.expression import bindparam
@@ -38,7 +38,8 @@ class Chat(Base):
     pinned = Column(Boolean, default=False, nullable=True)
 
     meta = Column(JSON, server_default="{}")
-    folder_id = Column(Text, nullable=True)
+    folder_id = Column(Text, ForeignKey('folder.id'), nullable=True)
+    folder = relationship("Folder", back_populates="chats")
 
 
 class ChatModel(BaseModel):
