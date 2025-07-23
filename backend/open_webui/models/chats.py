@@ -961,6 +961,19 @@ class ChatTable:
                 return True
         except Exception:
             return False
-
+    
+    def get_all_chats_for_folder_list(self, folder_ids: list[str], user_id: str) -> list[ChatModel]:
+        if not folder_ids:
+            return []
+        
+        with get_db() as db:
+            query = db.query(Chat).filter(
+                Chat.folder_id.in_(folder_ids),
+                Chat.user_id == user_id
+            )
+            query = query.filter(or_(Chat.pinned == False, Chat.pinned == None))
+            query = query.filter_by(archived=False)
+            all_chats = query.all()
+            return [ChatModel.model_validate(chat) for chat in all_chats]
 
 Chats = ChatTable()

@@ -27,6 +27,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from open_webui.utils.auth import get_admin_user, get_verified_user
 from open_webui.utils.access_control import has_permission
 
+from collections import defaultdict
 
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["MODELS"])
@@ -43,21 +44,27 @@ router = APIRouter()
 @router.get("/", response_model=list[FolderModel])
 async def get_folders(user=Depends(get_verified_user)):
     folders = Folders.get_folders_by_user_id(user.id)
-
-    return [
-        {
+    if not folders:
+        return []
+    folder_ids = [folder.id for folder in folders]
+    all_chats = Chats.get_all_chats_for_folder_list(folder_ids, user.id)
+    chats_by_folder_id = defaultdict(list)
+    for chat in all_chats:
+        chats_by_folder_id[chat.folder_id].append(chat)
+    response = []
+    for folder in folders:
+        folder_chats = chats_by_folder_id[folder.id]
+        sorted_chats = sorted(folder_chats, key=lambda c: c.updated_at, reverse=True)
+        response.append({
             **folder.model_dump(),
             "items": {
                 "chats": [
                     {"title": chat.title, "id": chat.id}
-                    for chat in Chats.get_chats_by_folder_id_and_user_id(
-                        folder.id, user.id
-                    )
+                    for chat in sorted_chats
                 ]
             },
-        }
-        for folder in folders
-    ]
+        })
+    return response
 
 
 ############################
