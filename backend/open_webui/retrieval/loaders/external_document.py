@@ -1,13 +1,13 @@
 import requests
 import logging, os
 from typing import Iterator, List, Union
+from urllib.parse import quote
 
 from langchain_core.document_loaders import BaseLoader
 from langchain_core.documents import Document
-from open_webui.env import SRC_LOG_LEVELS
+from open_webui.utils.headers import include_user_info_headers
 
 log = logging.getLogger(__name__)
-log.setLevel(SRC_LOG_LEVELS["RAG"])
 
 
 class ExternalDocumentLoader(BaseLoader):
@@ -17,6 +17,7 @@ class ExternalDocumentLoader(BaseLoader):
         url: str,
         api_key: str,
         mime_type=None,
+        user=None,
         **kwargs,
     ) -> None:
         self.url = url
@@ -24,6 +25,8 @@ class ExternalDocumentLoader(BaseLoader):
 
         self.file_path = file_path
         self.mime_type = mime_type
+
+        self.user = user
 
     def load(self) -> List[Document]:
         with open(self.file_path, "rb") as f:
@@ -37,9 +40,12 @@ class ExternalDocumentLoader(BaseLoader):
             headers["Authorization"] = f"Bearer {self.api_key}"
 
         try:
-            headers["X-Filename"] = os.path.basename(self.file_path)
+            headers["X-Filename"] = quote(os.path.basename(self.file_path))
         except:
             pass
+
+        if self.user is not None:
+            headers = include_user_info_headers(headers, self.user)
 
         url = self.url
         if url.endswith("/"):

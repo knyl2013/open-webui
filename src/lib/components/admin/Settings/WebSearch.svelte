@@ -13,6 +13,8 @@
 	export let saveHandler: Function;
 
 	let webSearchEngines = [
+		'ollama_cloud',
+		'perplexity_search',
 		'searxng',
 		'yacy',
 		'google_pse',
@@ -93,9 +95,9 @@
 		{#if webConfig}
 			<div class="">
 				<div class="mb-3">
-					<div class=" mb-2.5 text-base font-medium">{$i18n.t('General')}</div>
+					<div class=" mt-0.5 mb-2.5 text-base font-medium">{$i18n.t('General')}</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+					<hr class=" border-gray-100/30 dark:border-gray-850/30 my-2" />
 
 					<div class="  mb-2.5 flex w-full justify-between">
 						<div class=" self-center text-xs font-medium">
@@ -119,17 +121,75 @@
 							>
 								<option disabled selected value="">{$i18n.t('Select a engine')}</option>
 								{#each webSearchEngines as engine}
-									<option value={engine}>{engine}</option>
+									{#if engine === 'duckduckgo' || engine === 'ddgs'}
+										<option value={engine}>DDGS</option>
+									{:else}
+										<option value={engine}>{engine}</option>
+									{/if}
 								{/each}
 							</select>
 						</div>
 					</div>
 
 					{#if webConfig.WEB_SEARCH_ENGINE !== ''}
-						{#if webConfig.WEB_SEARCH_ENGINE === 'searxng'}
+						{#if webConfig.WEB_SEARCH_ENGINE === 'ollama_cloud'}
 							<div class="mb-2.5 flex w-full flex-col">
 								<div>
 									<div class=" self-center text-xs font-medium mb-1">
+										{$i18n.t('Ollama Cloud API Key')}
+									</div>
+
+									<div class="flex w-full">
+										<div class="flex-1">
+											<SensitiveInput
+												placeholder={$i18n.t('Enter Ollama Cloud API Key')}
+												bind:value={webConfig.OLLAMA_CLOUD_WEB_SEARCH_API_KEY}
+											/>
+										</div>
+									</div>
+								</div>
+							</div>
+						{:else if webConfig.WEB_SEARCH_ENGINE === 'perplexity_search'}
+							<div class="mb-2.5 flex w-full flex-col">
+								<div>
+									<div class=" self-center text-xs font-medium mb-1">
+										{$i18n.t('Perplexity Search API URL')}
+									</div>
+
+									<div class="flex w-full">
+										<div class="flex-1">
+											<input
+												class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+												type="text"
+												placeholder={$i18n.t('Enter Perplexity Search API URL')}
+												bind:value={webConfig.PERPLEXITY_SEARCH_API_URL}
+												autocomplete="off"
+											/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="mb-2.5 flex w-full flex-col">
+								<div>
+									<div class=" self-center text-xs font-medium mb-1">
+										{$i18n.t('Perplexity API Key')}
+									</div>
+
+									<div class="flex w-full">
+										<div class="flex-1">
+											<SensitiveInput
+												placeholder={$i18n.t('Enter Perplexity API Key')}
+												bind:value={webConfig.PERPLEXITY_API_KEY}
+											/>
+										</div>
+									</div>
+								</div>
+							</div>
+						{:else if webConfig.WEB_SEARCH_ENGINE === 'searxng'}
+							<div class="mb-2.5 flex w-full flex-col">
+								<div>
+									<div class=" self-left text-xs font-medium mb-1">
 										{$i18n.t('Searxng Query URL')}
 									</div>
 
@@ -140,6 +200,24 @@
 												type="text"
 												placeholder={$i18n.t('Enter Searxng Query URL')}
 												bind:value={webConfig.SEARXNG_QUERY_URL}
+												autocomplete="off"
+												required
+											/>
+										</div>
+									</div>
+								</div>
+								<div class="mb-2.5 flex w-full flex-col">
+									<div class=" self-left text-xs font-medium mb-1">
+										{$i18n.t('Searxng search language (all, en, es, de, fr, etc.)')}
+									</div>
+
+									<div class="flex w-full">
+										<div class="flex-1">
+											<input
+												class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+												type="text"
+												placeholder={$i18n.t('Enter Searxng search language')}
+												bind:value={webConfig.SEARXNG_LANGUAGE}
 												autocomplete="off"
 												required
 											/>
@@ -471,11 +549,11 @@
 									/>
 
 									<datalist id="perplexity-model-list">
-										<option value="sonar">Sonar</option>
-										<option value="sonar-pro">Sonar Pro</option>
-										<option value="sonar-reasoning">Sonar Reasoning</option>
-										<option value="sonar-reasoning-pro">Sonar Reasoning Pro</option>
-										<option value="sonar-deep-research">Sonar Deep Research</option>
+										<option value="sonar">{$i18n.t('Sonar')}</option>
+										<option value="sonar-pro">{$i18n.t('Sonar Pro')}</option>
+										<option value="sonar-reasoning">{$i18n.t('Sonar Reasoning')}</option>
+										<option value="sonar-reasoning-pro">{$i18n.t('Sonar Reasoning Pro')}</option>
+										<option value="sonar-deep-research">{$i18n.t('Sonar Deep Research')}</option>
 									</datalist>
 								</div>
 							</div>
@@ -489,9 +567,9 @@
 										class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 										bind:value={webConfig.PERPLEXITY_SEARCH_CONTEXT_USAGE}
 									>
-										<option value="low">Low</option>
-										<option value="medium">Medium</option>
-										<option value="high">High</option>
+										<option value="low">{$i18n.t('Low')}</option>
+										<option value="medium">{$i18n.t('Medium')}</option>
+										<option value="high">{$i18n.t('High')}</option>
 									</select>
 								</div>
 							</div>
@@ -603,14 +681,22 @@
 
 								<div class="w-full">
 									<div class=" self-center text-xs font-medium mb-1">
-										{$i18n.t('Concurrent Requests')}
+										<Tooltip
+											content={$i18n.t(
+												'Limit concurrent search queries. 0 = unlimited (default). Set to 1 for sequential execution (recommended for APIs with strict rate limits like Brave free tier).'
+											)}
+											placement="top-start"
+										>
+											{$i18n.t('Concurrent Requests')}
+										</Tooltip>
 									</div>
 
 									<input
 										class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 										placeholder={$i18n.t('Concurrent Requests')}
 										bind:value={webConfig.WEB_SEARCH_CONCURRENT_REQUESTS}
-										required
+										type="number"
+										min="0"
 									/>
 								</div>
 							</div>
@@ -624,7 +710,7 @@
 							<input
 								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 								placeholder={$i18n.t(
-									'Enter domains separated by commas (e.g., example.com,site.org)'
+									'Enter domains separated by commas (e.g., example.com,site.org,!excludedsite.com)'
 								)}
 								bind:value={webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST}
 							/>
@@ -684,9 +770,9 @@
 				</div>
 
 				<div class="mb-3">
-					<div class=" mb-2.5 text-base font-medium">{$i18n.t('Loader')}</div>
+					<div class=" mt-0.5 mb-2.5 text-base font-medium">{$i18n.t('Loader')}</div>
 
-					<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+					<hr class=" border-gray-100/30 dark:border-gray-850/30 my-2" />
 
 					<div class="  mb-2.5 flex w-full justify-between">
 						<div class=" self-center text-xs font-medium">
@@ -707,6 +793,19 @@
 					</div>
 
 					{#if webConfig.WEB_LOADER_ENGINE === '' || webConfig.WEB_LOADER_ENGINE === 'safe_web'}
+						<div class="  mb-2.5 flex w-full justify-between">
+							<div class=" self-center text-xs font-medium">
+								{$i18n.t('Timeout')}
+							</div>
+							<div class="flex items-center relative">
+								<input
+									class="flex-1 w-full text-sm bg-transparent outline-hidden"
+									placeholder={$i18n.t('Timeout')}
+									bind:value={webConfig.WEB_LOADER_TIMEOUT}
+								/>
+							</div>
+						</div>
+
 						<div class="  mb-2.5 flex w-full justify-between">
 							<div class=" self-center text-xs font-medium">
 								{$i18n.t('Verify SSL Certificate')}
@@ -848,6 +947,19 @@
 							</div>
 						</div>
 					{/if}
+
+					<div class="mb-2.5 w-full">
+						<div class=" self-center text-xs font-medium mb-1">
+							{$i18n.t('Concurrent Requests')}
+						</div>
+
+						<input
+							class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+							placeholder={$i18n.t('Concurrent Requests')}
+							bind:value={webConfig.WEB_LOADER_CONCURRENT_REQUESTS}
+							required
+						/>
+					</div>
 
 					<div class="  mb-2.5 flex w-full justify-between">
 						<div class=" self-center text-xs font-medium">

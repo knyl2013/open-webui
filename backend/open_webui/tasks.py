@@ -8,20 +8,19 @@ from redis.asyncio import Redis
 from fastapi import Request
 from typing import Dict, List, Optional
 
-from open_webui.env import SRC_LOG_LEVELS
+from open_webui.env import REDIS_KEY_PREFIX
 
 
 log = logging.getLogger(__name__)
-log.setLevel(SRC_LOG_LEVELS["MAIN"])
 
 # A dictionary to keep track of active tasks
 tasks: Dict[str, asyncio.Task] = {}
 item_tasks = {}
 
 
-REDIS_TASKS_KEY = "open-webui:tasks"
-REDIS_ITEM_TASKS_KEY = "open-webui:tasks:item"
-REDIS_PUBSUB_CHANNEL = "open-webui:tasks:commands"
+REDIS_TASKS_KEY = f"{REDIS_KEY_PREFIX}:tasks"
+REDIS_ITEM_TASKS_KEY = f"{REDIS_KEY_PREFIX}:tasks:item"
+REDIS_PUBSUB_CHANNEL = f"{REDIS_KEY_PREFIX}:tasks:commands"
 
 
 async def redis_task_command_listener(app):
@@ -153,9 +152,9 @@ async def stop_task(redis, task_id: str):
         # Optionally check if task_id still in Redis a few moments later for feedback?
         return {"status": True, "message": f"Stop signal sent for {task_id}"}
 
-    task = tasks.pop(task_id)
+    task = tasks.pop(task_id, None)
     if not task:
-        raise ValueError(f"Task with ID {task_id} not found.")
+        return {"status": False, "message": f"Task with ID {task_id} not found."}
 
     task.cancel()  # Request task cancellation
     try:
@@ -164,7 +163,10 @@ async def stop_task(redis, task_id: str):
         # Task successfully canceled
         return {"status": True, "message": f"Task {task_id} successfully stopped."}
 
-    return {"status": False, "message": f"Failed to stop task {task_id}."}
+    if task.cancelled() or task.done():
+        return {"status": True, "message": f"Task {task_id} successfully cancelled."}
+
+    return {"status": True, "message": f"Cancellation requested for {task_id}."}
 
 
 async def stop_item_tasks(redis: Redis, item_id: str):
